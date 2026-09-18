@@ -1,0 +1,8 @@
+{
+  "entity.fishbone.roar": {
+    "category": "hostile",
+    "sounds": [
+      "bleach_mod:hollow_scream"
+    ]
+  }
+}
