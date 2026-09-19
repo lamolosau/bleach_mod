@@ -48,13 +48,7 @@ public class FishboneEntity extends Monster implements GeoEntity {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "movement", 5, event -> {
-            if (this.attackDelay > 0) {
-                event.getController().setAnimationSpeed(2.0f);
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.fishbone.attack"));
-            }
-            
             event.getController().setAnimationSpeed(1.0f);
-            
             if (event.isMoving()) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.fishbone.walk"));
             }
@@ -62,10 +56,13 @@ public class FishboneEntity extends Monster implements GeoEntity {
         }));
 
         AnimationController<FishboneEntity> actionController = new AnimationController<>(this, "action", 3, event -> PlayState.STOP);
-
         actionController.triggerableAnim("roar", RawAnimation.begin().thenPlay("animation.fishbone.roar"));
-
         controllers.add(actionController);
+
+        AnimationController<FishboneEntity> attackController = new AnimationController<>(this, "attack_controller", 0, event -> PlayState.STOP);
+        attackController.setAnimationSpeed(2.0f); // On double la vitesse de l'animation d'attaque ici
+        attackController.triggerableAnim("attack", RawAnimation.begin().thenPlay("animation.fishbone.attack"));
+        controllers.add(attackController);
     }
 
     @Override
