@@ -124,6 +124,7 @@ public class FishboneEntity extends Monster implements GeoEntity {
             if (squaredDistance <= reach && this.isTimeToAttack() && FishboneEntity.this.roarTicks == 0) {
                 this.resetAttackCooldown();
                 FishboneEntity.this.attackDelay = 14; 
+                FishboneEntity.this.triggerAnim("attack_controller", "attack");
             }
         }
     }
