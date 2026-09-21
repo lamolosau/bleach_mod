@@ -19,4 +19,19 @@ public class FishboneModel extends GeoModel<FishboneEntity> {
     public ResourceLocation getAnimationResource(FishboneEntity object) {
         return new ResourceLocation("bleach_mod", "animations/fishbone.animation.json");
     }
+
+    @Override
+    public void setCustomAnimations(FishboneEntity animatable, long instanceId, AnimationState<FishboneEntity> animationState) {
+        super.setCustomAnimations(animatable, instanceId, animationState);
+
+        CoreGeoBone head = getAnimationProcessor().getBone("head");
+
+        if (head != null) {
+            EntityModelData entityData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
+            
+            head.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);
+            
+            head.setRotY(entityData.netHeadYaw() * Mth.DEG_TO_RAD);
+        }
+    }
 }
