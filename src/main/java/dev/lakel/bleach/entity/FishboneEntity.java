@@ -71,37 +71,47 @@ public class FishboneEntity extends Monster implements GeoEntity {
   }
 
   @Override
-  public void tick() {
+public void tick() {
     super.tick();
 
     if (this.roarTicks > 0) {
-      this.roarTicks--;
+        this.roarTicks--;
     }
+    
     if (this.attackDelay > 0) {
-      this.attackDelay--;
-      if (this.attackDelay == 0 && !this.level().isClientSide()) {
-        // Seul le serveur gère les dégâts
-        LivingEntity target = this.getTarget();
-        if (target != null && this.distanceToSqr(target) < 25.0D) {
-          super.doHurtTarget(target); 
+        this.attackDelay--;
+        if (this.attackDelay == 0 && !this.level().isClientSide()) {
+            // Seul le serveur gère les dégâts
+            LivingEntity hitTarget = this.getTarget(); // J'ai renommé cette variable locale pour éviter les conflits
+            if (hitTarget != null && this.distanceToSqr(hitTarget) < 25.0D) {
+                super.doHurtTarget(hitTarget); 
+            }
         }
-      }
+    }
+
+    // On récupère la cible pour gérer la rotation visuelle AVANT de couper l'exécution côté client
+    LivingEntity target = this.getTarget();
+
+    // NOUVEAU : Force le corps à s'aligner avec la tête pendant l'immobilisation
+    if (target != null && (this.roarTicks > 0 || this.attackDelay > 0)) {
+        this.getLookControl().setLookAt(target, 30.0f, 30.0f);
+        this.setYBodyRot(this.getYHeadRot());
     }
 
     if (this.level().isClientSide()) return; 
 
-    LivingEntity target = this.getTarget();
+    // Logique Serveur (Rugissement et perte d'aggro)
     if (target != null && !this.hasRoared) {
-      this.hasRoared = true;
-      this.roarTicks = 50; 
-      this.triggerAnim("action", "roar");
-      this.playSound(BleachMod.FISHBONE_ROAR_EVENT, 1.0F, 1.0F);
+        this.hasRoared = true;
+        this.roarTicks = 50; 
+        this.triggerAnim("action", "roar");
+        this.playSound(BleachMod.FISHBONE_ROAR_EVENT, 1.0F, 1.0F);
     }
 
     if (target == null) {
-      this.hasRoared = false;
+        this.hasRoared = false;
     }
-  }
+}
 
   @Override
   public void travel(Vec3 travelVector) {
