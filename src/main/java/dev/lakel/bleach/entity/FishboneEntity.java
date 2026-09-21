@@ -84,6 +84,7 @@ public void tick() {
             // Seul le serveur gère les dégâts
             LivingEntity hitTarget = this.getTarget(); // J'ai renommé cette variable locale pour éviter les conflits
             if (hitTarget != null && this.distanceToSqr(hitTarget) < 25.0D) {
+                BleachMod.LOGGER.info(">>> DEBUG: attackDelay est à 0, application des dégâts (Tick: " + this.tickCount + ")");
                 super.doHurtTarget(hitTarget); 
             }
         }
@@ -138,10 +139,17 @@ public void tick() {
       double reach = this.getAttackReachSqr(target);
 
       if (squaredDistance <= reach && this.isTimeToAttack() && FishboneEntity.this.roarTicks == 0 && FishboneEntity.this.attackDelay == 0) {
+        BleachMod.LOGGER.info(">>> DEBUG: L'IA déclenche l'animation et le délai (Tick: " + FishboneEntity.this.tickCount + ")");
         this.resetAttackCooldown();
         FishboneEntity.this.attackDelay = 14; 
         FishboneEntity.this.triggerAnim("attack_controller", "attack");
       }
+    }
+    
+    @Override
+    public boolean doHurtTarget(net.minecraft.world.entity.Entity target) {
+        BleachMod.LOGGER.info(">>> DEBUG: La méthode doHurtTarget a frappé le joueur ! (Tick: " + this.tickCount + ")");
+        return super.doHurtTarget(target);
     }
   }
 
