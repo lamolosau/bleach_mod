@@ -131,25 +131,33 @@ public void tick() {
     }
 
   class HollowMeleeAttackGoal extends MeleeAttackGoal {
-    public HollowMeleeAttackGoal(PathfinderMob mob, double speedModifier, boolean followingTargetEvenIfNotSeen) {
-      super(mob, speedModifier, followingTargetEvenIfNotSeen);
-    }
+        private int customCooldown = 0; 
 
-    @Override
-    protected int getAttackInterval() {
-      return this.adjustedTickDelay(40);
-    }
+        public HollowMeleeAttackGoal(PathfinderMob mob, double speedModifier, boolean followingTargetEvenIfNotSeen) {
+            super(mob, speedModifier, followingTargetEvenIfNotSeen);
+        }
 
-    @Override
-    protected void checkAndPerformAttack(LivingEntity target, double squaredDistance) {
-      double reach = this.getAttackReachSqr(target);
+        @Override
+        public void tick() {
+            super.tick();
+            if (this.customCooldown > 0) {
+                this.customCooldown--;
+            }
+        }
 
-      if (squaredDistance <= reach && this.isTimeToAttack() && FishboneEntity.this.roarTicks == 0 && FishboneEntity.this.attackDelay == 0) {
-        BleachMod.LOGGER.info(">>> DEBUG: L'IA déclenche l'animation et le délai (Tick: " + FishboneEntity.this.tickCount + ")");
-        this.resetAttackCooldown();
-        FishboneEntity.this.attackDelay = 14; 
-        FishboneEntity.this.triggerAnim("attack_controller", "attack");
-      }
+        @Override
+        protected void checkAndPerformAttack(LivingEntity target, double squaredDistance) {
+            double reach = this.getAttackReachSqr(target);
+            
+            if (squaredDistance <= reach && this.isTimeToAttack() && this.customCooldown <= 0 && FishboneEntity.this.roarTicks == 0 && FishboneEntity.this.attackDelay == 0) {
+                
+                this.resetAttackCooldown();
+                this.customCooldown = 40;
+                
+                FishboneEntity.this.attackDelay = 14; 
+                FishboneEntity.this.triggerAnim("attack_controller", "attack");
+            }
+        }
     }
     
   }
