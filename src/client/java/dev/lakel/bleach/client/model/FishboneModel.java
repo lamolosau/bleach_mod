@@ -17,6 +17,6 @@ public class FishboneModel extends GeoModel<FishboneEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(FishboneEntity object) {
-        return new ResourceLocation("bleach_mod", "animations/model.animation.json");
+        return new ResourceLocation("bleach_mod", "animations/fishbone.animation.json");
     }
 }
