@@ -124,6 +124,12 @@ public void tick() {
     super.travel(travelVector);
   }
 
+  @Override
+    public boolean doHurtTarget(net.minecraft.world.entity.Entity target) {
+        BleachMod.LOGGER.info(">>> DEBUG: La méthode doHurtTarget a frappé le joueur ! (Tick: " + this.tickCount + ")");
+        return super.doHurtTarget(target);
+    }
+
   class HollowMeleeAttackGoal extends MeleeAttackGoal {
     public HollowMeleeAttackGoal(PathfinderMob mob, double speedModifier, boolean followingTargetEvenIfNotSeen) {
       super(mob, speedModifier, followingTargetEvenIfNotSeen);
@@ -146,11 +152,6 @@ public void tick() {
       }
     }
     
-    @Override
-    public boolean doHurtTarget(net.minecraft.world.entity.Entity target) {
-        BleachMod.LOGGER.info(">>> DEBUG: La méthode doHurtTarget a frappé le joueur ! (Tick: " + this.tickCount + ")");
-        return super.doHurtTarget(target);
-    }
   }
 
 }
