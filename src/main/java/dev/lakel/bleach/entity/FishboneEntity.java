@@ -130,7 +130,7 @@ public void tick() {
 
     @Override
     protected int getAttackInterval() {
-      return this.adjustedTickDelay(25);
+      return this.adjustedTickDelay(40);
     }
 
     @Override
