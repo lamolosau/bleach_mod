@@ -1,0 +1,9 @@
+{
+  "name": "Shinigami",
+  "description": "Les protecteurs des âmes.",
+  "icon": "minecraft:iron_sword",
+  "impact": 1,
+  "powers": [
+    "origins:fall_immunity"
+  ]
+}
