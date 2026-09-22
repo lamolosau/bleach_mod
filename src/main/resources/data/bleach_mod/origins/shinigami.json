@@ -1,9 +1,10 @@
 {
   "name": "Shinigami",
-  "description": "Les protecteurs des âmes.",
+  "description": "Un dieu de la mort chargé de purifier les Hollows et de guider les âmes vers la Soul Society.",
   "icon": "minecraft:iron_sword",
-  "impact": 1,
+  "impact": 2,
   "powers": [
-    "origins:fall_immunity"
+    "bleach_mod:shinigami_tag_power",
+    "bleach_mod:reiatsu_resource"
   ]
 }

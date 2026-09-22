@@ -1,0 +1,20 @@
+{
+  "type": "apoli:resource",
+  "min": 0,
+  "max": 100,
+  "start_value": 100,
+  "hud_render": {
+    "should_render": false,
+    "sprite_location": "bleach_mod:textures/gui/reiatsu_bar.png",
+    "bar_index": 0,
+    "condition": {
+      "type": "apoli:living"
+    }
+  },
+  "max_action": {
+    "type": "apoli:nothing"
+  },
+  "min_action": {
+    "type": "apoli:nothing"
+  }
+}
