@@ -13,6 +13,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import net.minecraft.world.item.Item;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 
 public class BleachMod implements ModInitializer {
     public static final String MOD_ID = "bleach_mod";
@@ -27,15 +31,16 @@ public class BleachMod implements ModInitializer {
 
     public static final ResourceLocation FISHBONE_ROAR_ID = new ResourceLocation(MOD_ID, "entity.fishbone.roar");
     public static final SoundEvent FISHBONE_ROAR_EVENT = SoundEvent.createVariableRangeEvent(FISHBONE_ROAR_ID);
+    public static final Item SHINIGAMI_BADGE = new Item(new Item.Properties().stacksTo(1));
 
     @Override
     public void onInitialize() {
         LOGGER.info("Initialisation de Bleach Mod !");
         
-        // Enregistrement des attributs du mob
         FabricDefaultAttributeRegistry.register(FISHBONE, FishboneEntity.createAttributes());
         
-        // Enregistrement du son
         Registry.register(BuiltInRegistries.SOUND_EVENT, FISHBONE_ROAR_ID, FISHBONE_ROAR_EVENT);
+    
+        Registry.register(BuiltInRegistries.ITEM, new ResourceLocation("bleach_mod", "shinigami_badge"), SHINIGAMI_BADGE);
     }
 }

@@ -5,6 +5,7 @@
   "impact": 2,
   "powers": [
     "bleach_mod:shinigami_tag_power",
-    "bleach_mod:reiatsu_resource"
+    "bleach_mod:reiatsu_resource",
+    "bleach_mod:spiritual_body"
   ]
 }
