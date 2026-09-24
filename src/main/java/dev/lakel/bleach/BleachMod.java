@@ -21,6 +21,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import dev.lakel.bleach.item.ShinigamiBadgeItem;
+import dev.lakel.bleach.item.AsauchiItem;
+import net.minecraft.world.item.Tiers;
 
 public class BleachMod implements ModInitializer {
     public static final String MOD_ID = "bleach_mod";
@@ -45,7 +47,9 @@ public class BleachMod implements ModInitializer {
         FabricDefaultAttributeRegistry.register(FISHBONE, FishboneEntity.createAttributes());
         
         Registry.register(BuiltInRegistries.SOUND_EVENT, FISHBONE_ROAR_ID, FISHBONE_ROAR_EVENT);
-    
+        
+        Registry.register(BuiltInRegistries.ITEM, new ResourceLocation("bleach_mod", "asauchi"), ASAUCHI);
+
         Registry.register(BuiltInRegistries.ITEM, new ResourceLocation("bleach_mod", "shinigami_badge"), SHINIGAMI_BADGE);
     }
 }

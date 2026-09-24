@@ -1,6 +1,6 @@
-package dev.lakel.bleach.item;
+package dev.lakel.bleach.item; 
 
-import dev.lakel.bleach.BleachMod;
+import dev.lakel.bleach.BleachMod; 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -24,14 +24,19 @@ public class AsauchiItem extends SwordItem {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (!level.isClientSide && entity instanceof Player player && isSelected) {
-            CompoundTag nbt = stack.getOrCreateTag();
             
-            if (!nbt.contains("OwnerUUID")) {
-                nbt.putUUID("OwnerUUID", player.getUUID());
-                nbt.putString("OwnerName", player.getName().getString());
-                nbt.putInt("SpiritualXP", 0);
+            boolean hasReiatsu = player.getTags().contains("substitute_shinigami") || player.getTags().contains("true_shinigami");
+            
+            if (hasReiatsu) {
+                CompoundTag nbt = stack.getOrCreateTag();
                 
-                player.displayClientMessage(Component.literal("§7L'Asauchi a scellé une connexion avec votre âme..."), true);
+                if (!nbt.contains("OwnerUUID")) {
+                    nbt.putUUID("OwnerUUID", player.getUUID());
+                    nbt.putString("OwnerName", player.getName().getString());
+                    nbt.putInt("SpiritualXP", 0);
+                    
+                    player.displayClientMessage(Component.literal("§7L'Asauchi a scellé une connexion avec votre âme..."), true);
+                }
             }
         }
         super.inventoryTick(stack, level, entity, slotId, isSelected);
@@ -40,10 +45,11 @@ public class AsauchiItem extends SwordItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (!attacker.level().isClientSide && attacker instanceof Player player) {
+            
+            boolean hasReiatsu = player.getTags().contains("substitute_shinigami") || player.getTags().contains("true_shinigami");
             CompoundTag nbt = stack.getOrCreateTag();
             
-            if (nbt.contains("OwnerUUID") && nbt.getUUID("OwnerUUID").equals(player.getUUID())) {
-                
+            if (hasReiatsu && nbt.contains("OwnerUUID") && nbt.getUUID("OwnerUUID").equals(player.getUUID())) {
                 if (target.getType().is(BleachMod.HOLLOWS_TAG)) {
                     if (target.getHealth() <= 0.0f || target.isDeadOrDying()) {
                         int xp = nbt.getInt("SpiritualXP");
@@ -67,7 +73,7 @@ public class AsauchiItem extends SwordItem {
             tooltip.add(Component.literal("§7Propriétaire : §f" + nbt.getString("OwnerName")));
             tooltip.add(Component.literal("§bÂmes purifiées : §f" + nbt.getInt("SpiritualXP")));
         } else {
-            tooltip.add(Component.literal("§8Lame vierge... (Prenez-la en main pour la lier)"));
+            tooltip.add(Component.literal("§8Lame vierge... (Nécessite du Reiatsu pour être liée)"));
         }
         
         super.appendHoverText(stack, level, tooltip, flag);

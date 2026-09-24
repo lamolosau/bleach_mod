@@ -36,43 +36,47 @@ public class ShinigamiBadgeItem extends Item {
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (!level.isClientSide && entity instanceof Player player) {
             
-            List<LivingEntity> hollows = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(30.0), e -> e.getType().is(HOLLOWS_TAG));
+            boolean inHand = isSelected || player.getOffhandItem().getItem() == this;
             
-            if (!hollows.isEmpty()) {
-                double minDistance = 30.0;
-                for (LivingEntity hollow : hollows) {
-                    double dist = player.distanceTo(hollow);
-                    if (dist < minDistance) {
-                        minDistance = dist;
+            if (inHand) {
+                List<LivingEntity> hollows = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(30.0), e -> e.getType().is(HOLLOWS_TAG));
+                
+                if (!hollows.isEmpty()) {
+                    double minDistance = 30.0;
+                    for (LivingEntity hollow : hollows) {
+                        double dist = player.distanceTo(hollow);
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                        }
                     }
-                }
 
-                int tickInterval;
-                if (minDistance <= 10.0) {
-                    tickInterval = 10; 
-                } else if (minDistance <= 20.0) {
-                    tickInterval = 20; 
-                } else {
-                    tickInterval = 40; 
-                }
+                    int tickInterval;
+                    if (minDistance <= 10.0) {
+                        tickInterval = 10; 
+                    } else if (minDistance <= 20.0) {
+                        tickInterval = 20; 
+                    } else {
+                        tickInterval = 40; 
+                    }
 
-                if (level.getGameTime() % tickInterval == 0) {
-                    float pitch = 2.0f - (float) (minDistance / 30.0);
-                    level.playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.PLAYERS, 1.0F, pitch);
-                    
-                    if (level instanceof ServerLevel serverLevel) {
-                        for (LivingEntity hollow : hollows) {
-                            DustParticleOptions redDot = new DustParticleOptions(new Vector3f(1.0f, 0.0f, 0.0f), 1.5f);
-                            
-                            serverLevel.sendParticles(
-                                    redDot,
-                                    hollow.getX(),
-                                    hollow.getY() + hollow.getBbHeight() + 0.5,
-                                    hollow.getZ(),
-                                    3,
-                                    0.1, 0.1, 0.1,
-                                    0.0
-                            );
+                    if (level.getGameTime() % tickInterval == 0) {
+                        float pitch = 2.0f - (float) (minDistance / 30.0);
+                        level.playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.PLAYERS, 1.0F, pitch);
+                        
+                        if (level instanceof ServerLevel serverLevel) {
+                            for (LivingEntity hollow : hollows) {
+                                DustParticleOptions redDot = new DustParticleOptions(new Vector3f(1.0f, 0.0f, 0.0f), 1.5f);
+                                
+                                serverLevel.sendParticles(
+                                        redDot,
+                                        hollow.getX(),
+                                        hollow.getY() + hollow.getBbHeight() + 0.5,
+                                        hollow.getZ(),
+                                        3,
+                                        0.1, 0.1, 0.1,
+                                        0.0
+                                );
+                            }
                         }
                     }
                 }
