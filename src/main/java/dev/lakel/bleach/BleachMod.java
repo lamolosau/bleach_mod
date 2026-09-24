@@ -17,11 +17,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.EntityType;
+import dev.lakel.bleach.item.ShinigamiBadgeItem;
 
 public class BleachMod implements ModInitializer {
     public static final String MOD_ID = "bleach_mod";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
+    public static final TagKey<EntityType<?>> HOLLOWS_TAG = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("bleach_mod", "hollows"));
     public static final EntityType<FishboneEntity> FISHBONE = Registry.register(
             BuiltInRegistries.ENTITY_TYPE,
             new ResourceLocation(MOD_ID, "fishbone"),
@@ -31,7 +35,7 @@ public class BleachMod implements ModInitializer {
 
     public static final ResourceLocation FISHBONE_ROAR_ID = new ResourceLocation(MOD_ID, "entity.fishbone.roar");
     public static final SoundEvent FISHBONE_ROAR_EVENT = SoundEvent.createVariableRangeEvent(FISHBONE_ROAR_ID);
-    public static final Item SHINIGAMI_BADGE = new Item(new Item.Properties().stacksTo(1));
+    public static final Item SHINIGAMI_BADGE = new ShinigamiBadgeItem(new Item.Properties().stacksTo(1));
 
     @Override
     public void onInitialize() {
