@@ -91,12 +91,22 @@ public class ShinigamiBadgeItem extends Item {
             boolean isSubstitute = player.getTags().contains("substitute_shinigami");
 
             if (isSubstitute) {
-                String revokeCommand = "power revoke " + serverPlayer.getScoreboardName() + " bleach_mod:reiatsu_resource";
-                level.getServer().getCommands().performPrefixedCommand(level.getServer().createCommandSourceStack(), revokeCommand);
-                
-                player.removeTag("substitute_shinigami");
-                level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.0F, 1.0F);
-                player.displayClientMessage(Component.literal("§aVous avez réintégré votre corps."), true);
+                List<dev.lakel.bleach.entity.InertBodyEntity> bodies = level.getEntitiesOfClass(dev.lakel.bleach.entity.InertBodyEntity.class, player.getBoundingBox().inflate(7.0), e -> e.getOwnerUUID().equals(player.getUUID()));
+
+                if (!bodies.isEmpty()) {
+                    String revokeCommand = "power revoke " + serverPlayer.getScoreboardName() + " bleach_mod:reiatsu_resource";
+                    level.getServer().getCommands().performPrefixedCommand(level.getServer().createCommandSourceStack(), revokeCommand);
+                    
+                    player.removeTag("substitute_shinigami");
+                    level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    player.displayClientMessage(Component.literal("§aVous avez réintégré votre corps."), true);
+
+                    for (dev.lakel.bleach.entity.InertBodyEntity body : bodies) {
+                        body.discard();
+                    }
+                } else {
+                    player.displayClientMessage(Component.literal("§cVous êtes trop loin de votre corps physique !"), true);
+                }
 
             } else {
                 String grantCommand = "power grant " + serverPlayer.getScoreboardName() + " bleach_mod:reiatsu_resource";
@@ -109,6 +119,15 @@ public class ShinigamiBadgeItem extends Item {
                     serverPlayer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 2, false, false));
                     level.playSound(null, player.blockPosition(), SoundEvents.ILLUSIONER_CAST_SPELL, SoundSource.PLAYERS, 1.0F, 1.0F);
                     player.displayClientMessage(Component.literal("§cVous êtes séparé de votre corps !"), true);
+                    
+                    dev.lakel.bleach.entity.InertBodyEntity inertBody = dev.lakel.bleach.BleachMod.INERT_BODY.create(level);
+                    if (inertBody != null) {
+                        inertBody.moveTo(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
+                        inertBody.setOwnerUUID(player.getUUID());
+                        inertBody.setCustomName(Component.literal("Corps de " + player.getName().getString()));
+                        inertBody.setCustomNameVisible(true);
+                        level.addFreshEntity(inertBody);
+                    }
                     
                 } else {
                     player.displayClientMessage(Component.literal("§eLe Daikōshō résonne avec votre pression spirituelle..."), true);

@@ -13,6 +13,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import dev.lakel.bleach.client.InertBodyRenderer;
 
 public class BleachClient implements ClientModInitializer {
 
@@ -31,6 +33,8 @@ public class BleachClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        
+        EntityRendererRegistry.register(BleachMod.INERT_BODY, InertBodyRenderer::new);
         EntityRendererRegistry.register(BleachMod.FISHBONE, FishboneRenderer::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
