@@ -36,6 +36,7 @@ public class BleachMod implements ModInitializer {
     public static final ResourceLocation FISHBONE_ROAR_ID = new ResourceLocation(MOD_ID, "entity.fishbone.roar");
     public static final SoundEvent FISHBONE_ROAR_EVENT = SoundEvent.createVariableRangeEvent(FISHBONE_ROAR_ID);
     public static final Item SHINIGAMI_BADGE = new ShinigamiBadgeItem(new Item.Properties().stacksTo(1));
+    public static final Item ASAUCHI = new AsauchiItem(Tiers.IRON, 3, -2.4F, new Item.Properties());
 
     @Override
     public void onInitialize() {
