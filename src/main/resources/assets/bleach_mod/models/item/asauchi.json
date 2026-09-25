@@ -1,3 +1,161 @@
 {
-  "parent": "builtin/entity"
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "texture_size": [
+    64,
+    64
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        93,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        8,
+        -1.5
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        93,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        8,
+        -1.5
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        109,
+        3,
+        0
+      ],
+      "translation": [
+        0,
+        4.5,
+        -1.75
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        109,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        4.5,
+        -1.75
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        0,
+        0.5
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "gui": {
+      "rotation": [
+        53.75,
+        46,
+        -33.66
+      ],
+      "translation": [
+        -0.75,
+        -2.25,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "head": {
+      "rotation": [
+        0,
+        -86,
+        0
+      ],
+      "translation": [
+        -1.25,
+        -5.25,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        90,
+        -55.25,
+        90
+      ],
+      "translation": [
+        1.25,
+        -3,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "on_shelf": {
+      "rotation": [
+        86.4,
+        -1.35,
+        -22.34
+      ],
+      "translation": [
+        -3.5,
+        3,
+        -3
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    }
+  },
+  "textures": {
+    "particle": "bleach_mod:item/asauchi"
+  }
 }
