@@ -29,6 +29,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.EntityDimensions;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 
 public class BleachMod implements ModInitializer {
   public static final String MOD_ID = "bleach_mod";
@@ -65,5 +66,14 @@ public class BleachMod implements ModInitializer {
     Registry.register(BuiltInRegistries.ITEM, new ResourceLocation("bleach_mod", "shinigami_badge"), SHINIGAMI_BADGE);
   
     FabricDefaultAttributeRegistry.register(INERT_BODY, InertBodyEntity.createMobAttributes());
+    
+    ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            if (newPlayer.getTags().contains("substitute_shinigami")) {
+                String revokeCommand = "power revoke " + newPlayer.getScoreboardName() + " bleach_mod:reiatsu_resource";
+                newPlayer.getServer().getCommands().performPrefixedCommand(newPlayer.getServer().createCommandSourceStack(), revokeCommand);
+                newPlayer.removeTag("substitute_shinigami");
+                newPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§eLa mort a forcé votre âme à réintégrer votre enveloppe charnelle."), false);
+            }
+        });
   }
 }
