@@ -2,6 +2,7 @@ package dev.lakel.bleach.client;
 
 import dev.lakel.bleach.BleachMod;
 import dev.lakel.bleach.client.renderer.FishboneRenderer;
+import dev.lakel.bleach.item.AsauchiItem;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.PowerType;
@@ -13,8 +14,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import dev.lakel.bleach.client.InertBodyRenderer;
+import software.bernie.geckolib.animatable.client.RenderProvider;
 
 public class BleachClient implements ClientModInitializer {
 
@@ -36,6 +36,18 @@ public class BleachClient implements ClientModInitializer {
         
         EntityRendererRegistry.register(BleachMod.INERT_BODY, InertBodyRenderer::new);
         EntityRendererRegistry.register(BleachMod.FISHBONE, FishboneRenderer::new);
+
+        AsauchiItem.CLIENT_RENDER_PROVIDER = () -> new RenderProvider() {
+            private dev.lakel.bleach.client.renderer.AsauchiRenderer renderer;
+            
+            @Override
+            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                if (this.renderer == null) {
+                    this.renderer = new dev.lakel.bleach.client.renderer.AsauchiRenderer();
+                }
+                return this.renderer;
+            }
+        };
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;

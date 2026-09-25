@@ -64,7 +64,7 @@ public class BleachMod implements ModInitializer {
     Registry.register(BuiltInRegistries.ITEM, new ResourceLocation("bleach_mod", "asauchi"), ASAUCHI);
 
     Registry.register(BuiltInRegistries.ITEM, new ResourceLocation("bleach_mod", "shinigami_badge"), SHINIGAMI_BADGE);
-  
+ 
     FabricDefaultAttributeRegistry.register(INERT_BODY, InertBodyEntity.createMobAttributes());
     
     ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
