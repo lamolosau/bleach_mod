@@ -7,6 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
+import io.github.apace100.apoli.power.VariableIntPower;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -20,16 +21,15 @@ public class BleachClient implements ClientModInitializer {
 
     private static float targetReiatsu = 100f;
     private static float animatedReiatsu = 100f;
-    private static int regenTimer = 0;
-    private static boolean wasAttackPressed = false;
+    private static float maxReiatsu = 100f;
 
     private static final ResourceLocation REIATSU_BAR_TEXTURE = new ResourceLocation("bleach_mod", "textures/gui/reiatsu_bar.png");
     private static final ResourceLocation REIATSU_POWER_ID = new ResourceLocation("bleach_mod", "reiatsu_resource");
     
     private static final int BAR_WIDTH = 81;
-    private static final int BAR_HEIGHT = 10;
+    private static final int BAR_HEIGHT = 5;
     private static final int TEXTURE_WIDTH = 81;
-    private static final int TEXTURE_HEIGHT = 100;
+    private static final int TEXTURE_HEIGHT = 10;
 
     @Override
     public void onInitializeClient() {
@@ -54,27 +54,14 @@ public class BleachClient implements ClientModInitializer {
 
             if (PowerTypeRegistry.contains(REIATSU_POWER_ID)) {
                 PowerType<?> powerType = PowerTypeRegistry.get(REIATSU_POWER_ID);
-                if (!PowerHolderComponent.KEY.get(client.player).hasPower(powerType)) {
-                    return;
-                }
-            } else {
-                return;
-            }
-
-            boolean isAttackPressed = client.options.keyAttack.isDown();
-            if (isAttackPressed && !wasAttackPressed) {
-                if (targetReiatsu >= 10f) {
-                    targetReiatsu -= 10f; 
-                    regenTimer = 0; 
-                }
-            }
-            wasAttackPressed = isAttackPressed;
-
-            if (targetReiatsu < 100f) {
-                regenTimer++;
-                if (regenTimer >= 200) {
-                    targetReiatsu = Math.min(100f, targetReiatsu + 10f);
-                    regenTimer = 0;
+                PowerHolderComponent component = PowerHolderComponent.KEY.get(client.player);
+                
+                if (component.hasPower(powerType)) {
+                    io.github.apace100.apoli.power.Power power = component.getPower(powerType);
+                    if (power instanceof VariableIntPower resourcePower) {
+                        targetReiatsu = resourcePower.getValue();
+                        maxReiatsu = resourcePower.getMax(); 
+                    }
                 }
             }
         });
@@ -98,12 +85,14 @@ public class BleachClient implements ClientModInitializer {
                 int y = screenHeight - 54; 
 
                 animatedReiatsu = Mth.lerp(tickDelta * 0.1f, animatedReiatsu, targetReiatsu);
-                int drawnWidth = (int) (BAR_WIDTH * (animatedReiatsu / 100f));
+                
+                float percentage = Math.max(0, Math.min(1f, animatedReiatsu / maxReiatsu));
+                int drawnWidth = (int) (BAR_WIDTH * percentage);
 
                 guiGraphics.blit(REIATSU_BAR_TEXTURE, x, y, 0, 0, BAR_WIDTH, BAR_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
                 if (drawnWidth > 0) {
-                    guiGraphics.blit(REIATSU_BAR_TEXTURE, x, y, 0, 90, drawnWidth, BAR_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+                    guiGraphics.blit(REIATSU_BAR_TEXTURE, x, y, 0, 5, drawnWidth, BAR_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
                 }
 
                 long time = client.level.getGameTime();
@@ -118,7 +107,7 @@ public class BleachClient implements ClientModInitializer {
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha); 
 
                 if (drawnWidth > 0) {
-                    guiGraphics.blit(REIATSU_BAR_TEXTURE, x, y, 0, 90, drawnWidth, BAR_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+                    guiGraphics.blit(REIATSU_BAR_TEXTURE, x, y, 0, 5, drawnWidth, BAR_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
                 }
 
                 RenderSystem.defaultBlendFunc();

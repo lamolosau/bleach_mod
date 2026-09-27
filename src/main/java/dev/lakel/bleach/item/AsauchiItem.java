@@ -3,6 +3,7 @@ package dev.lakel.bleach.item;
 import dev.lakel.bleach.BleachMod; 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -11,11 +12,16 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
+import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.PowerTypeRegistry;
+import io.github.apace100.apoli.power.VariableIntPower;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -55,10 +61,12 @@ public class AsauchiItem extends SwordItem implements GeoItem {
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        if (!level.isClientSide && entity instanceof Player player && isSelected) {
+        if (!level.isClientSide && entity instanceof Player player) {
             boolean hasReiatsu = player.getTags().contains("substitute_shinigami") || player.getTags().contains("true_shinigami");
+            
             if (hasReiatsu) {
                 CompoundTag nbt = stack.getOrCreateTag();
+                // Scellement de l'arme
                 if (!nbt.contains("OwnerUUID")) {
                     nbt.putUUID("OwnerUUID", player.getUUID());
                     nbt.putString("OwnerName", player.getName().getString());
@@ -74,16 +82,35 @@ public class AsauchiItem extends SwordItem implements GeoItem {
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (!attacker.level().isClientSide && attacker instanceof Player player) {
             boolean hasReiatsu = player.getTags().contains("substitute_shinigami") || player.getTags().contains("true_shinigami");
-            CompoundTag nbt = stack.getOrCreateTag();
             
-            if (hasReiatsu && nbt.contains("OwnerUUID") && nbt.getUUID("OwnerUUID").equals(player.getUUID())) {
-                if (target.getType().is(BleachMod.HOLLOWS_TAG)) {
-                    if (target.getHealth() <= 0.0f || target.isDeadOrDying()) {
-                        int xp = nbt.getInt("SpiritualXP");
-                        nbt.putInt("SpiritualXP", xp + 1);
-                        
-                        if (xp + 1 == 50) {
-                            player.displayClientMessage(Component.literal("§bVotre Zanpakutō vibre intensément... Il est prêt à s'éveiller."), false);
+            if (hasReiatsu) {
+                // On signale au chronomètre global qu'on vient de dépenser du Reiatsu
+                BleachMod.LAST_REIATSU_USE.put(player.getUUID(), player.level().getGameTime());
+                
+                boolean isCrit = player.fallDistance > 0.0F && !player.onGround() && !player.onClimbable() && !player.isInWater() && !player.hasEffect(MobEffects.BLINDNESS) && !player.isPassenger() && !player.isSprinting();
+                int drainAmount = isCrit ? -5 : -3;
+                
+                ResourceLocation reiatsuId = new ResourceLocation("bleach_mod", "reiatsu_resource");
+                if (PowerTypeRegistry.contains(reiatsuId)) {
+                    PowerType<?> powerType = PowerTypeRegistry.get(reiatsuId);
+                    PowerHolderComponent component = PowerHolderComponent.KEY.get(player);
+                    if (component.hasPower(powerType) && component.getPower(powerType) instanceof VariableIntPower resPower) {
+                        int newVal = Math.max(0, resPower.getValue() + drainAmount);
+                        resPower.setValue(newVal);
+                        PowerHolderComponent.KEY.sync(player);
+                    }
+                }
+
+                CompoundTag nbt = stack.getOrCreateTag();
+                if (nbt.contains("OwnerUUID") && nbt.getUUID("OwnerUUID").equals(player.getUUID())) {
+                    if (target.getType().is(BleachMod.HOLLOWS_TAG)) {
+                        if (target.getHealth() <= 0.0f || target.isDeadOrDying()) {
+                            int xp = nbt.getInt("SpiritualXP");
+                            nbt.putInt("SpiritualXP", xp + 1);
+                            
+                            if (xp + 1 == 50) {
+                                player.displayClientMessage(Component.literal("§bVotre Zanpakutō vibre intensément... Il est prêt à s'éveiller."), false);
+                            }
                         }
                     }
                 }
