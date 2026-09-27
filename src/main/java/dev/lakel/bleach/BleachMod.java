@@ -35,6 +35,7 @@ public class BleachMod implements ModInitializer {
     public static final String MOD_ID = "bleach_mod";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     
+    // Chronomètre en mémoire pour savoir quand un joueur a dépensé du reiatsu pour la dernière fois
     public static final Map<UUID, Long> LAST_REIATSU_USE = new HashMap<>();
 
     public static final TagKey<EntityType<?>> HOLLOWS_TAG = TagKey.create(net.minecraft.core.registries.Registries.ENTITY_TYPE, new ResourceLocation("bleach_mod", "hollows"));
@@ -75,9 +76,11 @@ public class BleachMod implements ModInitializer {
             }
         });
 
+        // BOUCLE DE REGENERATION GLOBALE DU REIATSU
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            long time = server.getOverworld().getGameTime();
+            long time = server.overworld().getGameTime(); // Correction de la méthode ici
             
+            // On exécute la régénération seulement toutes les demi-secondes (10 ticks) pour optimiser les performances
             if (time % 10 == 0) {
                 ResourceLocation reiatsuId = new ResourceLocation("bleach_mod", "reiatsu_resource");
                 if (!PowerTypeRegistry.contains(reiatsuId)) return;
@@ -88,6 +91,7 @@ public class BleachMod implements ModInitializer {
                         
                         long lastUse = LAST_REIATSU_USE.getOrDefault(player.getUUID(), 0L);
                         
+                        // Si 10 secondes (200 ticks) se sont écoulées depuis la dernière dépense
                         if (time - lastUse >= 200) {
                             PowerHolderComponent component = PowerHolderComponent.KEY.get(player);
                             if (component.hasPower(powerType) && component.getPower(powerType) instanceof VariableIntPower resPower) {
